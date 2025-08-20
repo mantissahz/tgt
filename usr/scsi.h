@@ -247,6 +247,7 @@
 
 /* Data Protect */
 #define ASC_WRITE_PROTECT			0x2700
+#define ASC_SPACE_ALLOC_FAILED		        0x2707
 #define ASC_MEDIUM_OVERWRITE_ATTEMPTED		0x300c
 
 /* Miscompare */

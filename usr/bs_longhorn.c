@@ -70,6 +70,13 @@ static void set_medium_error(int *result, uint8_t *key, uint16_t *asc)
 	*asc = ASC_READ_ERROR;
 }
 
+static void set_nospc_error(int *result, uint8_t *key, uint16_t *asc)
+{
+	*result = SAM_STAT_CHECK_CONDITION;
+	*key = DATA_PROTECT;
+	*asc = ASC_SPACE_ALLOC_FAILED;
+}
+
 static void bs_longhorn_request(struct scsi_cmd *cmd)
 {
 	int ret = 0;
@@ -94,8 +101,12 @@ static void bs_longhorn_request(struct scsi_cmd *cmd)
 			    length, cmd->offset);
 		pthread_rwlock_unlock(&lh->rwlock);
 		if (ret) {
-            eprintf("fail to write at %" PRIu64 " for %u\n", cmd->offset, length);
-			set_medium_error(&result, &key, &asc);
+            eprintf("fail to write at %" PRIu64 " for %u, ret: %d\n", cmd->offset, length, ret);
+            if (ret == -ENOSPC) {
+                set_nospc_error(&result, &key, &asc);
+            } else {
+                set_medium_error(&result, &key, &asc);
+            }
         }
 		break;
 	case READ_6:
