@@ -125,6 +125,9 @@ static inline void longhorn_log(const char *level, const char *fmt, ...) {
     longhorn_log("Error", fmt, ##__VA_ARGS__)
 
 #define LONGHORN_INFO_LOG(fmt, ...) \
-    longhorn_log("Info", fmt, ##__VA_ARGS__)
+do { \
+	if (is_debug) \
+    	longhorn_log("Info", fmt, ##__VA_ARGS__); \
+} while (0)
 
 #endif	/* LOG_H */
